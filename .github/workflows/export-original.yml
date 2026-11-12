@@ -1,0 +1,28 @@
+name: Export original hero PDF
+
+on:
+  push:
+    branches:
+      - restore-pdf-temp
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Copy original PDF
+        shell: bash
+        run: |
+          mkdir -p out
+          pdf="$(find . -maxdepth 1 -type f -name '*.pdf' -print -quit)"
+          test -n "$pdf"
+          cp "$pdf" out/Darkest_Dungeon_Heroes_v43.pdf
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dd-heroes-v43
+          path: out/Darkest_Dungeon_Heroes_v43.pdf
+          if-no-files-found: error
+          retention-days: 1
